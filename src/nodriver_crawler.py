@@ -63,8 +63,10 @@ class NodriverCrawler:
             if not page_loaded:
                 continue
 
-            await self.__handle_actions(page, req.actions)
-
+            msg = await self.__handle_actions(page, req.actions)
+            if msg:
+                return SolutionResultT({"response": msg, "status": 500, "url": req.url})
+            
             # 取得截圖
             screenshot_base64 = ""
 
