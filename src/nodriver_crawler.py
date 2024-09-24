@@ -1,6 +1,7 @@
 """使用 NodriverCrawler 來抓取網頁數據"""
 
 import asyncio
+import os
 import platform
 import time
 
@@ -34,10 +35,11 @@ class NodriverCrawler:
 
         if self.browser is None:
             browser = self.browser = await uc.start()
+            if os.path.exists(COOKIES_FILE):
+                await browser.cookies.load(COOKIES_FILE)
         else:
             browser = self.browser
 
-        await browser.cookies.load(COOKIES_FILE)
         for attempt in range(req.retry_count + 1):
             if attempt > 1:
                 dbg(f"嘗試次數: {attempt}/{req.retry_count - 1}")
@@ -66,7 +68,7 @@ class NodriverCrawler:
             msg = await self.__handle_actions(page, req.actions)
             if msg:
                 return SolutionResultT({"response": msg, "status": 500, "url": req.url})
-            
+
             # 取得截圖
             screenshot_base64 = ""
 
